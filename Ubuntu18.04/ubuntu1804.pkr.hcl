@@ -34,12 +34,12 @@ variable "headless"{
 
 variable "iso_checksum"{
     type    = string
-    default = "sha256:6c647b1ab4318e8c560d5748f908e108be654bad1e165f7cf4f3c1fc43995934"
+    default = "sha256:f5cbb8104348f0097a8e513b10173a07dbc6684595e331cb06f93f385d0aecf6"
 }
 
 variable "iso_file"{
     type    = string
-    default = "ubuntu-18.04.6-live-server-amd64.iso"
+    default = "ubuntu-18.04.6-server-amd64.iso"
 }
 
 variable "iso_path_internal"{
@@ -54,7 +54,7 @@ variable "iso_path_external"{
 
 variable "ssh_username"{
     type    = string
-    default = "test"
+    default = "testuser"
 }
 
 variable "ssh_password"{
@@ -95,18 +95,20 @@ source "virtualbox-iso" "test"{
         " <wait>",
         " <wait>",
         " <wait>",
-        "<esc><wait>",
-        "<f6><wait>",
-        "<esc><wait>",
-        "<bs><bs><bs><bs><wait>",
-        "ksdevice=ens0 ",
-        "locale=en_US.UTF-8 ",
-        "keyboard-configuration/layoutcode=us",
-        "hostname=${var.vm_name} ",
-        "interface=ens0 ",
-        #"auto=true ",
+        "<esc><esc><enter><wait><wait><wait>",
+        "install initrd=/install/initrd.gz ",
+        "auto=true ",
         "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "language=en ",
+        # if coutry=RU the installation stops at the choose locale screen
+        # despite the fact that it's defined down below
+        "country=US ",
+        "locale=en_US.UTF-8 ",
+        "hostname=${var.vm_name} ",
+        "domain= ",
+        "interface=auto ",
         "console-setup/ask_detect=false ",
+        "keyboard-configuration/layoutcode=us ",
         "---<enter>"
   ]
 
@@ -134,7 +136,7 @@ source "virtualbox-iso" "test"{
   
   disk_size = var.disk_size
   
-  shutdown_command = "echo 'test' | sudo -S shutdown -P now"
+  shutdown_command = "echo 'testpass' | sudo -S shutdown -P now"
 }
 
 build{
