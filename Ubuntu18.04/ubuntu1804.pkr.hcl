@@ -32,26 +32,6 @@ variable "headless"{
     default = false
 }
 
-variable "host_port_max"{
-    type    = string
-    default = "8888"
-}
-
-variable "host_port_min"{
-    type    = string
-    default = "4444"
-}
-
-variable "http_port_max"{
-    type    = string
-    default = "9000"
-}
-
-variable "http_port_min"{
-    type    = string
-    default = "8000"
-}
-
 variable "iso_checksum"{
     type    = string
     default = "sha256:6c647b1ab4318e8c560d5748f908e108be654bad1e165f7cf4f3c1fc43995934"
@@ -137,12 +117,6 @@ source "virtualbox-iso" "test"{
 
   headless = var.headless
 
-  host_port_max = var.host_port_max
-  host_port_min = var.host_port_min
-
-  #http_port_max = var.http_port_max
-  #http_port_min = var.http_port_min
-
   iso_checksum = var.iso_checksum 
   iso_urls = [
     "${var.iso_path_internal}/${var.iso_file}",
@@ -150,8 +124,7 @@ source "virtualbox-iso" "test"{
   ]
 
   http_directory = var.preseed_directory
-  #http_content         = { "/preseed.cfg" = templatefile(var.preseed_file, { var = var }) }
-  
+ 
   ssh_username = var.ssh_username
   ssh_password = var.ssh_password
   ssh_handshake_attempts = var.ssh_handshake_attempts
