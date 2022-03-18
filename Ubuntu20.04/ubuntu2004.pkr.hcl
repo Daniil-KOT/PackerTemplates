@@ -125,7 +125,7 @@ source "virtualbox-iso" "test"{
   
   disk_size = var.disk_size
   
-  shutdown_command = "echo 'test' | sudo -S shutdown -P now"
+  shutdown_command = "echo 'admin' | sudo -S shutdown -P now"
 }
 
 build{

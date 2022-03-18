@@ -24,7 +24,7 @@ autoinstall:
           lock_passwd: false
           passwd: 78ddc8555bb1677ff5af75ba5fc02cb30bb592b0610277ae15055e189b77fe3fda496e5027a3d99ec85d54941adee1cc174b50438fdc21d82d0a79f85b58cf44
           ssh-authorized-keys:
-            - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJgeyVzv5Us8IdXzUjAsv/dVuovDahNzkjlDwqz2VWHqAaugYOA1qGhWV8KmlUNr2UH3U0r3b0iEfbN6lsv/iDM48O4ZzclSo1pQV4CXajeJcgmfFm3+qAhkehseqpvpOUvP58O7pdXGPjtow7RppedmKLcKdm2Y1EHn2ZbgttJnC0Pf0M5nfKHJgjMxTkGfFo8UponueGJEe93Pc7HywWSH7F7y4RoU99UP8G+NLsc1wt4LXRLdr2GlUYD7gxMVjC/j5YFobxAcjncTq7HnRTtzlY3Z1eStMV1k20L3Gx2cbgNEeO/XezM3oWCj+4uYgzipprQtQ3IzFTvBtBrhDT admin@Daniil-PC
+            - ssh-rsa 
     chpasswd:
         list: |
             root:rootpasswd
@@ -36,7 +36,7 @@ autoinstall:
         install-server: yes
         allow-pw: yes
         authorized-keys:
-            - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJgeyVzv5Us8IdXzUjAsv/dVuovDahNzkjlDwqz2VWHqAaugYOA1qGhWV8KmlUNr2UH3U0r3b0iEfbN6lsv/iDM48O4ZzclSo1pQV4CXajeJcgmfFm3+qAhkehseqpvpOUvP58O7pdXGPjtow7RppedmKLcKdm2Y1EHn2ZbgttJnC0Pf0M5nfKHJgjMxTkGfFo8UponueGJEe93Pc7HywWSH7F7y4RoU99UP8G+NLsc1wt4LXRLdr2GlUYD7gxMVjC/j5YFobxAcjncTq7HnRTtzlY3Z1eStMV1k20L3Gx2cbgNEeO/XezM3oWCj+4uYgzipprQtQ3IzFTvBtBrhDT admin@Daniil-PC
+            - ssh-rsa 
     user-data:
         disable_root: false
     late-commands:
