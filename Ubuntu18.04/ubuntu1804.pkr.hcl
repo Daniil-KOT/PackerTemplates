@@ -9,7 +9,7 @@ packer {
 
 variable "boot_wait"{
     type    = string
-    default = "4s"
+    default = "2s"
 }
 
 variable "communicator"{
@@ -34,12 +34,12 @@ variable "headless"{
 
 variable "iso_checksum"{
     type    = string
-    default = "sha256:f5cbb8104348f0097a8e513b10173a07dbc6684595e331cb06f93f385d0aecf6"
+    default = "sha256:f730be589aa1ba923ebe6eca573fa66d09ba14c4c104da2c329df652d42aff11"
 }
 
 variable "iso_file"{
     type    = string
-    default = "ubuntu-18.04.6-server-amd64.iso"
+    default = "ubuntu-18.04.6-desktop-amd64.iso"
 }
 
 variable "iso_path_internal"{
@@ -96,9 +96,10 @@ source "virtualbox-iso" "test"{
         " <wait>",
         " <wait>",
         "<esc><esc><enter><wait><wait><wait>",
-        "install initrd=/install/initrd.gz ",
+        "/casper/vmlinuz noapic ",
+        "initrd=/casper/initrd ",
         "auto=true ",
-        "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.preseed_file} ",
         "language=en ",
         # if coutry=RU the installation stops at the choose locale screen
         # despite the fact that it's defined down below
