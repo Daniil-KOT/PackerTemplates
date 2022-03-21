@@ -58,7 +58,7 @@ variable "iso_path_internal"{
 
 variable "iso_path_external"{
     type    = string
-    default = "http://mirror.truenetwork.ru/centos/7.9.2009/"
+    default = "https://mirror.yandex.ru/centos/7.9.2009/"
 }
 
 variable "ssh_username"{
@@ -78,7 +78,7 @@ variable "ssh_handshake_attempts"{
 
 variable "ssh_timeout"{
     type    = string
-    default = "40m"
+    default = "100m"
 }
 
 variable "ks_directory"{
