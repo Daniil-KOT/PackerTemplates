@@ -144,6 +144,10 @@ build{
     sources = ["sources.vmware-iso.test"]
 
     provisioner "shell" {
-        inline = ["ls /"]
+        inline = [
+            "sudo yum groupinstall 'GNOME Desktop' 'Graphical Administration Tools' -y",
+            "sudo startx",
+            "systemctl set-default graphical.target"
+        ]
     }
 }
