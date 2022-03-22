@@ -34,12 +34,12 @@ variable "headless"{
 
 variable "iso_checksum"{
     type    = string
-    default = "sha256:f730be589aa1ba923ebe6eca573fa66d09ba14c4c104da2c329df652d42aff11"
+    default = "sha256:f5cbb8104348f0097a8e513b10173a07dbc6684595e331cb06f93f385d0aecf6"
 }
 
 variable "iso_file"{
     type    = string
-    default = "ubuntu-18.04.6-desktop-amd64.iso"
+    default = "ubuntu-18.04.6-server-amd64.iso"
 }
 
 variable "iso_path_internal"{
@@ -96,8 +96,7 @@ source "virtualbox-iso" "test"{
         " <wait>",
         " <wait>",
         "<esc><esc><enter><wait><wait><wait>",
-        "/casper/vmlinuz noapic ",
-        "initrd=/casper/initrd ",
+        "install initrd=/install/initrd.gz ",
         "auto=true ",
         "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.preseed_file} ",
         "language=en ",
@@ -147,6 +146,11 @@ build{
   sources = ["sources.virtualbox-iso.test"]
 
   provisioner "shell" {
-      inline = ["ls /"]
+        execute_command = "echo 'testpass' | sudo -E -S bash '{{.Path}}'"
+        scripts = [
+            "./scripts/apt-upgrade.sh",
+            "./scripts/desktop.sh"
+        ]
+        expect_disconnect = true
     }
 }
