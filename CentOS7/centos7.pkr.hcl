@@ -78,7 +78,7 @@ variable "ssh_handshake_attempts"{
 
 variable "ssh_timeout"{
     type    = string
-    default = "100m"
+    default = "120m"
 }
 
 variable "ks_directory"{
@@ -87,13 +87,18 @@ variable "ks_directory"{
 }
 
 variable "ks_file"{
-    type = string
+    type    = string
     default = "ks.cfg"
 }
 
 variable "disk_size"{
     type    = number
     default = 8192
+}
+
+variable "output_dir"{
+    type    = string
+    default = "E:/AladdinR.D/Packer/output-test-centos7/"
 }
 
 source "vmware-iso" "test"{
@@ -103,7 +108,7 @@ source "vmware-iso" "test"{
         "<wait>",
         "<tab><wait>",
         "<bs><bs><bs><bs><bs>",
-        "text<wait> ", 
+        "graphical<wait> ", 
         "ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.ks_file}<enter><wait>"
     ]
 
@@ -134,7 +139,9 @@ source "vmware-iso" "test"{
 
     disk_size = var.disk_size
   
-    shutdown_command = "echo 'testpass' | sudo -S /sbin/halt -h -p"
+    output_directory = var.output_dir
+
+    shutdown_command = "echo 'testpass' | sudo shutdown -h 0"
 }
 
 build{
@@ -144,10 +151,11 @@ build{
     sources = ["sources.vmware-iso.test"]
 
     provisioner "shell" {
-        inline = [
-            "sudo yum groupinstall 'GNOME Desktop' 'Graphical Administration Tools' -y",
-            "sudo startx",
-            "systemctl set-default graphical.target"
-        ]
+        execute_command = "echo 'testpass' | sudo -E -S bash '{{.Path}}'"
+        scripts = [
+            "./scripts/yum-update.sh",
+            "./scripts/gui-install.sh"
+            ]
+        expect_disconnect = true
     }
 }
