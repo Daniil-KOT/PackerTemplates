@@ -7,15 +7,6 @@ packer {
   }
 }
 
-packer {
-  required_plugins {
-    virtualbox = {
-      version = ">= 0.0.1"
-      source = "github.com/hashicorp/virtualbox"
-    }
-  }
-}
-
 variable "boot_wait"{
     type    = string
     default = "4s"
@@ -53,7 +44,7 @@ variable "iso_file"{
 
 variable "iso_path_internal"{
     type    = string
-    default = "file://E:/AladdinR.D/Packer/isos"
+    default = ""
 }
 
 variable "iso_path_external"{
@@ -98,7 +89,7 @@ variable "disk_size"{
 
 variable "output_dir"{
     type    = string
-    default = "E:/AladdinR.D/Packer/output-test-centos8/"
+    default = ""
 }
 
 source "vmware-iso" "test"{
@@ -108,7 +99,7 @@ source "vmware-iso" "test"{
         "<wait>",
         "<tab><wait>",
         "<bs><bs><bs><bs><bs>",
-        "graphical<wait> ", 
+        "text<wait> ", 
         "ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.ks_file}<enter><wait>"
     ]
 
@@ -153,7 +144,7 @@ build{
     provisioner "shell" {
         execute_command = "echo 'testpass' | sudo -E -S bash '{{.Path}}'"
         scripts = [
-            "./scripts/yum-update.sh",
+            "./scripts/dnf-update.sh",
             "./scripts/gui-install.sh"
             ]
         expect_disconnect = true
