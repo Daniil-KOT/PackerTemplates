@@ -1,8 +1,8 @@
 packer {
   required_plugins {
-    virtualbox = {
-      version = ">= 0.0.1"
-      source = "github.com/hashicorp/virtualbox"
+    vmware = {
+      version = ">= 1.0.3"
+      source = "github.com/hashicorp/vmware"
     }
   }
 }
@@ -19,7 +19,7 @@ variable "communicator"{
 
 variable "guest_os_type"{
     type    = string
-    default = "Ubuntu_64"
+    default = "ubuntu64Guest"
 }
 
 variable "vm_name"{
@@ -44,7 +44,7 @@ variable "iso_file"{
 
 variable "iso_path_internal"{
     type    = string
-    default = "file://E:/AladdinR.D/Packer/isos"
+    default = ""
 }
 
 variable "iso_path_external"{
@@ -87,7 +87,12 @@ variable "disk_size"{
     default = 8192
 }
 
-source "virtualbox-iso" "test"{
+variable "output_dir"{
+    type    = string
+    default = ""
+}
+
+source "vmware-iso" "test"{
 
   boot_command = [
         " <wait>",
@@ -132,9 +137,14 @@ source "virtualbox-iso" "test"{
   ssh_handshake_attempts = var.ssh_handshake_attempts
   ssh_wait_timeout = var.ssh_timeout
 
-  vboxmanage = [["modifyvm", "{{ .Name }}", "--memory", "1024"], ["modifyvm", "{{ .Name }}", "--cpus", "1"]]
+  vmx_data = {
+        memsize = "1024",
+        numvcpus = "1"
+    }
   
   disk_size = var.disk_size
+
+  output_directory = var.output_dir
   
   shutdown_command = "echo 'testpass' | sudo -S shutdown -P now"
 }
@@ -143,7 +153,7 @@ build{
 
   name = "test"
 
-  sources = ["sources.virtualbox-iso.test"]
+  sources = ["sources.vmware-iso.test"]
 
   provisioner "shell" {
         execute_command = "echo 'testpass' | sudo -E -S bash '{{.Path}}'"
