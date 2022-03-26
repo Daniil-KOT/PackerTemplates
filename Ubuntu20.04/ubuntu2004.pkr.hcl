@@ -1,8 +1,8 @@
 packer {
   required_plugins {
-    virtualbox = {
-      version = ">= 0.0.1"
-      source = "github.com/hashicorp/virtualbox"
+    vmware = {
+      version = ">= 1.0.3"
+      source = "github.com/hashicorp/vmware"
     }
   }
 }
@@ -19,7 +19,7 @@ variable "communicator"{
 
 variable "guest_os_type"{
     type    = string
-    default = "Ubuntu_64"
+    default = "ubuntu64Guest"
 }
 
 variable "vm_name"{
@@ -34,32 +34,32 @@ variable "headless"{
 
 variable "iso_checksum"{
     type    = string
-    default = "sha256:28ccdb56450e643bad03bb7bcf7507ce3d8d90e8bf09e38f6bd9ac298a98eaad"
+    default = "sha256:f11bda2f2caed8f420802b59f382c25160b114ccc665dbac9c5046e7fceaced2"
 }
 
 variable "iso_file"{
     type    = string
-    default = "ubuntu-20.04.4-live-server-amd64.iso"
+    default = "ubuntu-20.04.1-legacy-server-amd64.iso"
 }
 
 variable "iso_path_internal"{
     type    = string
-    default = "file://E:/AladdinR.D/Packer/isos"
+    default = ""
 }
 
 variable "iso_path_external"{
     type    = string
-    default = "http://releases.ubuntu.com/20.04/"
+    default = "https://cdimage.ubuntu.com/ubuntu-legacy-server/releases/20.04/release/"
 }
 
 variable "ssh_username"{
     type    = string
-    default = "root"
+    default = "testuser"
 }
 
 variable "ssh_password"{
     type    = string
-    default = "Rootpasswd1"
+    default = "testpass"
 }
 
 variable "ssh_handshake_attempts"{
@@ -69,20 +69,30 @@ variable "ssh_handshake_attempts"{
 
 variable "ssh_timeout"{
     type    = string
-    default = "40m"
+    default = "100m"
 }
 
-variable "userdata_directory"{
+variable "preseed_directory"{
     type    = string
     default = "http"
 }
 
-variable "disk_size"{
-    type    = number
-    default = 8192
+variable "preseed_file"{
+    type = string
+    default = "preseed.cfg"
 }
 
-source "virtualbox-iso" "test"{
+variable "disk_size"{
+    type    = number
+    default = 10240
+}
+
+variable "output_dir"{
+    type    = string
+    default = ""
+}
+
+source "vmware-iso" "test"{
 
   boot_command = [
         " <wait>",
@@ -90,15 +100,19 @@ source "virtualbox-iso" "test"{
         " <wait>",
         " <wait>",
         " <wait>",
-        "<esc><wait>",
-        "<f6><wait>",
-        "<esc><wait>",
-        "<bs><bs><bs><bs><wait>",
-        " autoinstall<wait>",
-        " ds=nocloud-net<wait>",
-        ";s=http://<wait>{{.HTTPIP}}<wait>:{{.HTTPPort}}/<wait>",
-        " ---<wait>",
-        "<enter><wait>"
+        "<esc><esc><enter><wait><wait><wait>",
+        "install initrd=/install/initrd.gz ",
+        "auto=true ",
+        "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.preseed_file} ",
+        "language=en ",
+        "country=US ",
+        "locale=en_US.UTF-8 ",
+        "hostname=${var.vm_name} ",
+        "domain= ",
+        "interface=auto ",
+        "console-setup/ask_detect=false ",
+        "keyboard-configuration/layoutcode=us ",
+        "---<enter>"
   ]
 
   boot_wait = var.boot_wait
@@ -114,27 +128,37 @@ source "virtualbox-iso" "test"{
     "${var.iso_path_external}/${var.iso_file}"
   ]
 
-  http_directory = var.userdata_directory
+  http_directory = var.preseed_directory
   
   ssh_username = var.ssh_username
   ssh_password = var.ssh_password
   ssh_handshake_attempts = var.ssh_handshake_attempts
   ssh_wait_timeout = var.ssh_timeout
 
-  vboxmanage = [["modifyvm", "{{ .Name }}", "--memory", "1024"], ["modifyvm", "{{ .Name }}", "--cpus", "1"]]
-  
+  vmx_data = {
+        memsize = "1024",
+        numvcpus = "1"
+    }
+
   disk_size = var.disk_size
+
+  output_directory = var.output_dir
   
-  shutdown_command = "echo 'admin' | sudo -S shutdown -P now"
+  shutdown_command = "echo 'testpass' | sudo -S shutdown -P now"
 }
 
 build{
 
   name = "test"
 
-  sources = ["sources.virtualbox-iso.test"]
+  sources = ["sources.vmware-iso.test"]
 
   provisioner "shell" {
-      inline = ["ls /"]
+      execute_command = "echo 'testpass' | sudo -E -S bash '{{.Path}}'"
+        scripts = [
+            "./scripts/apt-upgrade.sh",
+            "./scripts/desktop.sh"
+        ]
+        expect_disconnect = true
     }
 }
